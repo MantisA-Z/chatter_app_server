@@ -31,6 +31,9 @@ app.get("/", (req, res) => {
 app.post("/signup", signupController);
 app.post("/signin", signinController);
 app.get("/verify/:userId/:token", verifyController);
+app.get("/api", (req, res) => {
+  res.status(200).json({ verified: true });
+});
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
