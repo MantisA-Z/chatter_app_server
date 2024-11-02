@@ -11,14 +11,15 @@ const { setUpSocketServer } = require("./utils/socketSetup");
 const signupController = require("./controllers/signup");
 const signinController = require("./controllers/signin");
 const verifyController = require("./controllers/verify");
+const uploadController = require("./controllers/upload");
 
 //Initialize database connection
 connectDB();
 
 //Middlewares
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: false }));
 app.use("/api", verifyMiddleware);
 
 //Io connection
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 app.post("/signup", signupController);
 app.post("/signin", signinController);
+app.post("/upload", uploadController);
 app.get("/verify/:userId/:token", verifyController);
 app.get("/api", (req, res) => {
   res.status(200).json({ verified: true });

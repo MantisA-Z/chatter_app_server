@@ -17,12 +17,18 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  groups: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "group",
+    },
+  ],
   verified: {
     type: Boolean,
     default: false,
   },
 });
 
-const userModel = mongoose.model("users", userSchema);
+const userModel = mongoose.model("user", userSchema);
 
 module.exports = userModel;
