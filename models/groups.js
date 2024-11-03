@@ -9,6 +9,7 @@ const groupsSchema = new mongoose.Schema({
     {
       from: { type: String, required: true },
       msg: { type: String, required: true },
+      createdAt: { type: String },
     },
   ],
   logo: {

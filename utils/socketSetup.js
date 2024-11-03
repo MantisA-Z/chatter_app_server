@@ -24,6 +24,10 @@ const setUpSocketServer = (server) => {
             const user = await userModel
               .findOne({ connectionId })
               .populate("groups");
+            user.groups.map((group, i) => {
+              socket.join(group._id.toString());
+              console.log(group._id.toString());
+            });
             return user.groups;
           } catch (err) {
             console.log(err);
@@ -64,6 +68,51 @@ const setUpSocketServer = (server) => {
         }
       }
     );
+
+    socket.on("user:msg", async ({ connectionId, groupId, msg }) => {
+      function formatDate(date) {
+        const options = { month: "2-digit", day: "2-digit", year: "numeric" };
+        const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
+          date
+        );
+
+        // Get hours and minutes
+        let hours = date.getHours();
+        const minutes = date.getMinutes();
+        const ampm = hours >= 12 ? "PM" : "AM";
+
+        // Convert to 12-hour format
+        hours = hours % 12;
+        hours = hours === 0 ? 12 : hours; // Only change '0' to '12'
+
+        // Format minutes to be two digits
+        const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+        return `${formattedDate} ${hours}:${formattedMinutes} ${ampm}`;
+      }
+
+      try {
+        const user = await userModel.findOne({ connectionId });
+        if (!user) return;
+        //First emit the message to Room for speed
+        io.to(groupId).emit("server:room-msg", {
+          msg,
+          from: user.name,
+          groupId,
+        });
+
+        const group = await groupsModel.findOne({ _id: groupId });
+        if (!group) return;
+        const now = new Date();
+        const createdAt = formatDate(now);
+        group.chat.push({ from: user.name, msg, createdAt });
+        const updatedGroup = await group.save();
+        console.log(updatedGroup);
+        console.log(groupId);
+      } catch (err) {
+        console.log(err);
+      }
+    });
   });
 };
 
