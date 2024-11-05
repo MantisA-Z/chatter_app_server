@@ -58,8 +58,6 @@ const setUpSocketServer = (server) => {
           //make the user join room and emit event
           socket.join(groupInstance._id);
           socket.emit("server:created-new-room", {
-            name,
-            logoImgUrl,
             groupInstance,
           });
         } catch (err) {
