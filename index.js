@@ -12,6 +12,7 @@ const signupController = require("./controllers/signup");
 const signinController = require("./controllers/signin");
 const verifyController = require("./controllers/verify");
 const uploadController = require("./controllers/upload");
+const updateGroupController = require("./controllers/updateGroup");
 
 //Initialize database connection
 connectDB();
@@ -33,9 +34,10 @@ app.post("/signup", signupController);
 app.post("/signin", signinController);
 app.post("/upload", uploadController);
 app.get("/verify/:userId/:token", verifyController);
-app.get("/api", (req, res) => {
+app.post("/api", (req, res) => {
   res.status(200).json({ verified: true });
 });
+app.post("/api/update-group", updateGroupController);
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {

@@ -18,7 +18,6 @@ const verifyUser = (req, res, next) => {
     return;
   }
 
-  res.status(200).json({ verified: true });
   next();
 };
 
