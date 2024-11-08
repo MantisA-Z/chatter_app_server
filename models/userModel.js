@@ -16,6 +16,7 @@ const userSchema = new mongoose.Schema({
   connectionId: {
     type: String,
     required: true,
+    unique: true,
   },
   groups: [
     {
