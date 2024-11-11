@@ -10,7 +10,6 @@ const updateGroup = async (req, res) => {
   }
   try {
     let group = await groupModel.findOne({ _id: groupId });
-    console.log(group);
     if (!group) {
       res.status(404).json({ err: "not found" });
       return;

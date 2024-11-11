@@ -26,7 +26,6 @@ const setUpSocketServer = (server) => {
               .populate("groups");
             user.groups.map((group, i) => {
               socket.join(group._id.toString());
-              console.log(group._id.toString());
             });
             return user.groups;
           } catch (err) {
@@ -105,10 +104,20 @@ const setUpSocketServer = (server) => {
         const createdAt = formatDate(now);
         group.chat.push({ from: user.name, msg, createdAt });
         const updatedGroup = await group.save();
-        console.log(updatedGroup);
-        console.log(groupId);
       } catch (err) {
         console.log(err);
+      }
+    });
+
+    socket.on("user:room-invite", async ({ connectionId, group }) => {
+      const groupInstance = await groupsModel.findOne({ _id: group._id });
+      if (connectionIdMap.has(connectionId) && groupInstance) {
+        //Firstly send invite via socket connection
+        io.to(connectionIdMap.get(connectionId)).emit("server:group-invite", {
+          group: groupInstance,
+        });
+
+        //Then update the database
       }
     });
   });
