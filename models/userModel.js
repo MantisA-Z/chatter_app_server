@@ -24,6 +24,12 @@ const userSchema = new mongoose.Schema({
       ref: "group",
     },
   ],
+  globalMsg: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "globalMsg",
+    },
+  ],
   verified: {
     type: Boolean,
     default: false,

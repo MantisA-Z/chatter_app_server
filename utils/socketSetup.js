@@ -2,6 +2,7 @@ const { Server, Socket } = require("socket.io");
 const JWT = require("jsonwebtoken");
 const groupsModel = require("../models/groups");
 const userModel = require("../models/userModel");
+const globalMsgModel = require("../models/globalMsg");
 
 const setUpSocketServer = (server) => {
   const connectionIdMap = new Map();
@@ -110,14 +111,30 @@ const setUpSocketServer = (server) => {
     });
 
     socket.on("user:room-invite", async ({ connectionId, group }) => {
+      //First ensure there is a group like that and the user with that connection Id exists
       const groupInstance = await groupsModel.findOne({ _id: group._id });
-      if (connectionIdMap.has(connectionId) && groupInstance) {
+      const user = await userModel.findOne({ connectionId });
+
+      if (connectionIdMap.has(connectionId) && groupInstance && user) {
         //Firstly send invite via socket connection
         io.to(connectionIdMap.get(connectionId)).emit("server:group-invite", {
+          groupId: groupInstance._id,
           group: groupInstance,
+          text: `You have been invited to join ${groupInstance.name} by a group member.`,
         });
 
         //Then update the database
+        const msg = await globalMsgModel.create({
+          from: group.name,
+          to: connectionId,
+          msg: {
+            groupId: groupInstance._id,
+            group: groupInstance,
+            text: `You have been invited to join ${groupInstance.name} by a group member.`,
+          },
+        });
+        user.globalMsg.push(msg._id);
+        await user.save();
       }
     });
   });
