@@ -8,7 +8,7 @@ const groupsSchema = new mongoose.Schema({
   chat: [
     {
       from: { type: String, required: true },
-      msg: { type: String, required: true },
+      msg: { type: Object, required: true },
       createdAt: { type: String },
     },
   ],

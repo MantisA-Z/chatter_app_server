@@ -14,6 +14,7 @@ const verifyController = require("./controllers/verify");
 const uploadController = require("./controllers/upload");
 const updateGroupController = require("./controllers/updateGroup");
 const messagesController = require("./controllers/messages");
+const fileMsgController = require("./controllers/fileMsg");
 
 //Initialize database connection
 connectDB();
@@ -40,6 +41,7 @@ app.post("/api", (req, res) => {
 });
 app.get("/api/msg", messagesController);
 app.post("/api/update-group", updateGroupController);
+app.post("/api/fileMsg", fileMsgController);
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT, () => {
