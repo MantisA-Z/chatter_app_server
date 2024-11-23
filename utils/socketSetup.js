@@ -145,6 +145,8 @@ const setUpSocketServer = (server) => {
         type = "image";
       } else if (msg.fileType.startsWith("video")) {
         type = "video";
+      } else if (msg.fileType.startsWith("audio")) {
+        type = "audio";
       } else {
         type = "document";
       }
@@ -183,6 +185,17 @@ const setUpSocketServer = (server) => {
             msg: { type: type, video: fileUrl, text: msg.captions },
             createdAt,
           });
+        } else if (type === "audio") {
+          io.to(groupId).emit("server:file-msg", {
+            from: user.name,
+            msg: { type: type, audio: fileUrl, text: msg.captions },
+            groupId,
+          });
+          group.chat.push({
+            from: user.name,
+            msg: { type: type, audio: fileUrl, text: msg.captions },
+            createdAt,
+          });
         } else if (type === "document") {
           io.to(groupId).emit("server:file-msg", {
             from: user.name,
@@ -199,6 +212,7 @@ const setUpSocketServer = (server) => {
         console.log(group.chat);
       } catch (err) {
         console.log(`Error in user:file-msg ${err}`);
+        return;
       }
     });
   });

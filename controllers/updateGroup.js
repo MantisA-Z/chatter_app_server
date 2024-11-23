@@ -44,7 +44,7 @@ const updateGroup = async (req, res) => {
         (member, i) => !e.remove.includes(member)
       );
       group.name = e.name;
-      group.logoFile = file.url;
+      group.logo = file.url;
       group.members = updatedMembers;
       const updatedGroup = await group.save();
 

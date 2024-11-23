@@ -8,11 +8,14 @@ cloudinary.config({
 
 const uploadToCloudinary = async (file) => {
   try {
-    console.log(file);
     const response = await cloudinary.uploader.upload(file, {
       resource_type: "auto",
     });
-    return { url: response.url, success: true };
+    return {
+      url: response.secure_url,
+      success: true,
+      response: response,
+    };
   } catch (err) {
     return { success: false, err };
   }
