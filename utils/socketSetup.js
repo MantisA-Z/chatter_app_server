@@ -215,6 +215,9 @@ const setUpSocketServer = (server) => {
         return;
       }
     });
+    socket.on("user:initiate-call", ({ group }) => {
+      io.to(group._id).emit("server:user-calling");
+    });
   });
 };
 
