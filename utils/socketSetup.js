@@ -225,6 +225,7 @@ const setUpSocketServer = (server) => {
     socket.on("user:accept-req", async ({ req, connectionId }) => {
       const user = await userModel.findOne({ connectionId });
       const group = await groupsModel.findOne({ _id: req.msg.groupId });
+      console.log(user, group)
       group.members.push(user.connectionId);
       await group.save();
       user.groups.push(group._id);
