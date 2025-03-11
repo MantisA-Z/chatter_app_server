@@ -218,6 +218,20 @@ const setUpSocketServer = (server) => {
     socket.on("user:initiate-call", ({ group }) => {
       io.to(group._id).emit("server:user-calling");
     });
+    socket.on("user:decline-req", async ({ req, connectionId }) => {
+      await globalMsgModel.deleteMany({ from: req.from });
+      socket.emit("updated-messages", {});
+    });
+    socket.on("user:accept-req", async ({ req, connectionId }) => {
+      const user = await userModel.findOne({ connectionId });
+      const group = await groupsModel.findOne({ _id: req.msg.groupId });
+      group.members.push(user.connectionId);
+      await group.save();
+      user.groups.push(group._id);
+      await user.save();
+      await globalMsgModel.deleteMany({ from: req.from });
+      socket.emit("updated-messages", {});
+    });
   });
 };
 
