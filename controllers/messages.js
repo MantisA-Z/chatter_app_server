@@ -11,7 +11,10 @@ const messagesController = async (req, res) => {
     return;
   }
   await userInstance.populate("globalMsg");
-  res.status(200).json({ globalMessages: userInstance.globalMsg });
+  res.status(200).json({
+    globalMessages: userInstance.globalMsg,
+    connectionId: userInstance.connectionId,
+  });
 };
 
 module.exports = messagesController;
