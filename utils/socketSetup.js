@@ -39,6 +39,7 @@ const setUpSocketServer = (server) => {
 
     socket.on("user:connection-id", async ({ token }) => {
       const JWT_SECRET = process.env.JWT_SECRET;
+      if (!token) return;
       const decoded = JWT.verify(token, JWT_SECRET);
       if (decoded) {
         const connectionId = decoded.connectionId;
@@ -241,6 +242,7 @@ const setUpSocketServer = (server) => {
       socket.broadcast
         .to(groupId)
         .emit("user:joined-call", { userConnectionId: connectionId });
+      console.log({ connectionId, groupId });
     });
 
     socket.on("offer", ({ offer, to }) => {
