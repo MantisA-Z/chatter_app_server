@@ -26,6 +26,7 @@ function formatDate(date) {
 
 const setUpSocketServer = (server) => {
   const connectionIdMap = new Map();
+  const videoCallMap = new Map();
 
   const io = new Server(server, {
     cors: true,
@@ -225,13 +226,33 @@ const setUpSocketServer = (server) => {
     socket.on("user:accept-req", async ({ req, connectionId }) => {
       const user = await userModel.findOne({ connectionId });
       const group = await groupsModel.findOne({ _id: req.msg.groupId });
-      console.log(user, group)
+      console.log(user, group);
       group.members.push(user.connectionId);
       await group.save();
       user.groups.push(group._id);
       await user.save();
       await globalMsgModel.deleteMany({ from: req.from });
       socket.emit("updated-messages", {});
+    });
+
+    //Group call code
+    socket.on("user:join-call", ({ connectionId, groupId }) => {
+      socket.join(groupId);
+      socket.broadcast
+        .to(groupId)
+        .emit("user:joined-call", { userConnectionId: connectionId });
+    });
+
+    socket.on("offer", ({ offer, to }) => {
+      io.to(to).emit("offer", { offer, from: socket.id });
+    });
+
+    socket.on("answer", ({ answer, to }) => {
+      io.to(to).emit("answer", { answer, from: socket.id });
+    });
+
+    socket.on("ice-candidate", ({ candidate, to }) => {
+      io.to(to).emit("ice-candidate", { candidate, from: socket.id });
     });
   });
 };
