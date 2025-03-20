@@ -239,10 +239,7 @@ const setUpSocketServer = (server) => {
     //Group call code
     socket.on("user:join-call", ({ connectionId, groupId }) => {
       socket.join(groupId);
-      socket.broadcast
-        .to(groupId)
-        .emit("user:joined-call", { userConnectionId: connectionId });
-      console.log({ connectionId, groupId });
+      socket.to(groupId).emit("user:joined-call", { socketId: socket.id });
     });
 
     socket.on("offer", ({ offer, to }) => {
